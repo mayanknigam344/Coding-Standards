@@ -12,12 +12,14 @@ Usage of [Utility Class Example]https://projectlombok.org/features/experimental/
 
 Code that works fine:
   
-  ``` <code>return MapperUtil.getPOSActionCode(posActionCode);</code> ```
+  ``` 
+  return MapperUtil.getPOSActionCode(posActionCode);
+   ```
 
 Code that ends up in compilation issue:<br>
   ```
-  import static com.sabre.wolverine.payment.wrapper.mapper.MapperUtil.getPOSActionCode;
-  return getPOSActionCode(posActionCode);
+   import static com.sabre.wolverine.payment.wrapper.mapper.MapperUtil.getPOSActionCode;
+   return getPOSActionCode(posActionCode);
   ```
 
 Using static import might cause lombok plugin to fail on unrelated classes:
