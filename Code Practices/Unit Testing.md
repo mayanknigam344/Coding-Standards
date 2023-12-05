@@ -48,7 +48,12 @@ Expected: a string matching the pattern '^\**$' but: was "4485 0653 3119 6823"
 Expected :a string matching the pattern '^\**$'
 Actual   :"4485 0653 3119 6823"
 ```
-
+Ex- <br>
+```
+assertThat(passenger.getProfileConsentInd())
+.as("Check ProfileConsentIndicator value for Passenger with id %s", passenger.getId())
+.isTrue();
+```
 Useful Links <br>
 [1]https://joel-costigliola.github.io/assertj/assertj-core-features-highlight.html<br>
 [2]https://phauer.com/2019/modern-best-practices-testing-java/#avoid-asserttrue-and-assertfalse<br>
