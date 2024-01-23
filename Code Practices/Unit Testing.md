@@ -58,3 +58,70 @@ Useful Links <br>
 [1]https://joel-costigliola.github.io/assertj/assertj-core-features-highlight.html<br>
 [2]https://phauer.com/2019/modern-best-practices-testing-java/#avoid-asserttrue-and-assertfalse<br>
 [3]https://phauer.com/2019/modern-best-practices-testing-java/#use-assertj
+
+**2. Parameterized test**
+
+**Description** - Use the parameterized tests to avoid test code duplication and easily test various inputs.
+Place the data-generating method right before the method that uses these data, because it's basically the "given" section for this method. (see example below)
+
+**Additional Information** [Parameterize tests]https://www.baeldung.com/parameterized-tests-junit-5<br>
+**Advantages** -
+1. Allows to easily add additional test cases
+2. Improves maintenance
+
+**Avoid**
+```
+@Test
+  void testMapNanosToDecimalWithSmallAmount() {
+    // given
+    Money money = Money.newBuilder().setNanos(10000000).setDecimalPlaces(2).build();
+
+    // when
+    var result = underTest.mapNanosToDecimal(money);
+
+    // then
+    assertThat(result).isEqualTo(BigDecimal.valueOf(0.01));
+  }
+
+  @Test
+  void testMapNanosToDecimalWithSmallAmountWithTrimmedDecimalPlaces() {
+    // given
+    Money money = Money.newBuilder().setNanos(10000000).setDecimalPlaces(0).build();
+
+    // when
+    var result = underTest.mapNanosToDecimal(money);
+
+    // then
+    assertThat(result).isEqualTo(BigDecimal.valueOf(0));
+  }
+...
+
+```
+**Use**
+```
+private static Stream<Arguments> provideMapNanosToDecimal() {
+  return Stream.of(
+      Arguments.of(
+          Money.newBuilder().setNanos(10000000).setDecimalPlaces(2).build(),
+          BigDecimal.valueOf(0.01)),
+      Arguments.of(
+          Money.newBuilder().setNanos(10000000).setDecimalPlaces(0).build(),
+          BigDecimal.valueOf(0)),
+      Arguments.of(
+          Money.newBuilder().setNanos(12340000000L).setDecimalPlaces(2).build(),
+          BigDecimal.valueOf(12.34)),
+      Arguments.of(
+          Money.newBuilder().setNanos(12340000000L).setDecimalPlaces(0).build(),
+          BigDecimal.valueOf(12)));
+}
+
+@ParameterizedTest
+@MethodSource("provideMapNanosToDecimal")
+void testMapNanosToDecimal(Money money, BigDecimal expectedValue) {
+  // when
+  var result = underTest.mapNanosToDecimal(money);
+
+  // then
+  assertThat(result).isEqualTo(expectedValue);
+}
+```
