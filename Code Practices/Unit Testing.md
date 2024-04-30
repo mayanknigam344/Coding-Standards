@@ -125,3 +125,31 @@ void testMapNanosToDecimal(Money money, BigDecimal expectedValue) {
   assertThat(result).isEqualTo(expectedValue);
 }
 ```
+
+**3. Do NOT overuse any()**
+
+**Description** - any()  from Mockito is simple to use, however overusing it can easily create tests that will not detect bugs.
+
+**Avoid**
+```
+when(cardPaymentAuthorizer.tryAuthorizePayment(any(), any(), any())).thenReturn(newPayments);
+```
+
+**Damaged Code**
+```
+cardPaymentAuthorizer.tryAuthorizePayment(null, null, null);
+```
+
+**Use**
+```
+when(cardPaymentAuthorizer.tryAuthorizePayment(same(inputOrder), same(paymentCommonDataModel), anyList())).thenReturn(newPayments);
+```
+
+Ex -
+```
+when(publisher.publish(any(PubsubMessage.class))).thenReturn(future);
+```
+can be written as 
+```
+when(publisher.publish(any(PubsubMessage.class))).thenReturn(ApiFutures.immediateFuture("messageId"));
+```
