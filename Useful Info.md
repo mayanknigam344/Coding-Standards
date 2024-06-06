@@ -112,3 +112,36 @@ Annotation that can be specified on a test class that runs Spring Boot based tes
                 </configuration>
         </plugin>
        ```
+<br>
+
+**5. Tests shoulds not use real db just for testing features like logging etc.**
+
+Info - property ``` spring.datasource.url ``` triggers Spanner Auto Configuration <br>
+
+To fix this - we need to force the embedded database usage.<br>
+
+This can be achieved in the following way:<br>
+<br>
+    1. Add **ForcedEmbeddedDatabaseConfiguration** class to the end of test as an inner class with the following content:
+        
+        ```
+         @Profile("forced-embedded-database")
+         @TestConfiguration
+         static class ForcedEmbeddedDatabaseConfiguration {
+            @Bean
+            public DataSource getDataSource() {
+              EmbeddedDatabaseFactory embeddedDatabaseFactory = new EmbeddedDatabaseFactory();
+              embeddedDatabaseFactory.setDatabaseType(EmbeddedDatabaseType.H2);
+            return embeddedDatabaseFactory.getDatabase();
+            }
+          }
+      ```
+<br>
+    2. Activate additional profile on top of the test:
+       
+        ``` 
+        @ActiveProfiles({"logs-stdout-json-gke", "forced-embedded-database"}) 
+        ```
+<br>
+Now regardless of spring.datasource.url pointing to spanner db, usage of ForcedEmbeddedDatabaseConfiguration will prevent from actual real db to be used.
+
